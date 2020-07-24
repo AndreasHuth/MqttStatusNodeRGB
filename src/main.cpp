@@ -54,13 +54,11 @@ PubSubClient client(espClient);
 // ADC-Filter
 #define RATIO 0.90
 
+
+// Define time table 
 const int FrequencyTable[10] = {100,200,300,400,500,600,700,800,900,1000};
 
 boolean RBG_LED_state = false;
-
-// int RBG_LED_red = 0;
-// int RBG_LED_green = 0;
-// int RBG_LED_blue = 0;
 
 char helpC[8] = "000000";
 
@@ -72,13 +70,12 @@ int red_p   = 0;
 int green_p = 0;
 int blue_p  = 0;
 
-int frequency = 9;
+int frequency = 9;      // initial timebase: 1sec 
 
 // When we setup the NeoPixel library, we tell it how many pixels, and which pin to use to send signals.
 // Note that for older NeoPixel strips you might need to change the third parameter--see the strandtest
 // example for more information on possible values.
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(1, NEO_PIXEL_PIN, NEO_GRB + NEO_KHZ800);
-
 
 //flag for saving data
 bool shouldSaveConfig = false;
@@ -172,7 +169,6 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length) {
   }
 }
 
-
 // RECONNECT MQTT Server
 void reconnect() {
   // Loop until we're reconnected
@@ -190,11 +186,8 @@ void reconnect() {
       Serial.print(client.state());
       Serial.println(" try again in 5 seconds");
       // Wait 5 seconds before retrying
-      //digitalWrite(BUILTIN_LED, HIGH);
       ArduinoOTA.handle();
       delay(1500);
-
-      //digitalWrite(BUILTIN_LED, LOW);
       ArduinoOTA.handle();
       delay(1500);
     }
@@ -206,16 +199,18 @@ void setup() {
   Serial.begin(115200);
   Serial.println();
 
-  // OUTPUT Definition !  (high für LDR!)
+  // OUTPUT Definition 
+  // HIGH to use LDR!
   pinMode(D5, OUTPUT);
   digitalWrite(D5, HIGH);
 
-  // INPUT Definition !
+  // OTA reset 
   pinMode(D7, INPUT_PULLUP);
   boolean ota_reset = digitalRead(D7);
 
   // OUTPUT Definition !
-  pinMode(BUILTIN_LED, OUTPUT);  // initialize onboard LED as output
+  // initialize onboard LED as output
+  pinMode(BUILTIN_LED, OUTPUT);  
   digitalWrite (BUILTIN_LED, LOW);
 
   pixels.begin(); // This initializes the NeoPixel library.
@@ -347,7 +342,8 @@ void setup() {
   Serial.print("mqtt server  : ");
   Serial.println(mqtt_server);
 
-  client.publish(pup_trigger, "1");
+  client.publish(pup_trigger, "1");   // inital tigger to get first data 
+
   digitalWrite(BUILTIN_LED, HIGH);   // turn off LED with voltage LOW
 }
 
